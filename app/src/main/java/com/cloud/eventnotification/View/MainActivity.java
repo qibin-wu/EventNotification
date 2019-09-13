@@ -2,8 +2,11 @@ package com.cloud.eventnotification.View;
 
 import android.Manifest;
 
-import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.location.LocationManager;
+import android.provider.Settings;
+import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
@@ -20,6 +23,7 @@ import com.cloud.eventnotification.Model.UserEvents;
 import com.cloud.eventnotification.Model.Utility;
 import com.cloud.eventnotification.Model.eventItem;
 import com.cloud.eventnotification.R;
+import com.cloud.eventnotification.controller.ItemClickListener;
 import com.cloud.eventnotification.localDB.DBHelper;
 
 import java.text.ParseException;
@@ -32,12 +36,14 @@ import static android.content.pm.PackageManager.PERMISSION_GRANTED;
 public class MainActivity extends AppCompatActivity {
 
     private ArrayList<UserEvents> events= new ArrayList<>();
-
+    private static final int LOCATION_CODE = 1;
+    private LocationManager lm;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         requestCalendar();
+        getPermission();
 
         try {
             UpdateEvent();
@@ -55,7 +61,7 @@ public class MainActivity extends AppCompatActivity {
         eventItemAdapter myAdapter = new eventItemAdapter(this, items);
         ListView eventListView = findViewById(R.id.eventListView);
         eventListView.setAdapter(myAdapter);
-        //eventListView.setOnItemClickListener(new ItemClickListener(this, items));
+        eventListView.setOnItemClickListener(new ItemClickListener(this, items));
 
         Button btnRef = findViewById(R.id.btnRef);
         btnRef.setOnClickListener(new View.OnClickListener() {
@@ -157,21 +163,61 @@ public class MainActivity extends AppCompatActivity {
             } else {
 
                 ActivityCompat.requestPermissions(this,
-                        new String[]{Manifest.permission.READ_CALENDAR,}, 1);
+                        new String[]{Manifest.permission.READ_CALENDAR,}, 2);
             }
         }
     }
-    @Override
-    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+    // get the location permission
+    public void getPermission() {
+        lm = (LocationManager) MainActivity.this.getSystemService(MainActivity.this.LOCATION_SERVICE);
+        boolean ok = lm.isProviderEnabled(LocationManager.GPS_PROVIDER);
+        if (ok) {// if turn on GPS
 
-        if (requestCode == 1) {
-            for (int i = 0; i < permissions.length; i++) {
-                if (grantResults[i] == PERMISSION_GRANTED) {
-                    Toast.makeText(this, "" + "permission" + permissions[i] + "apply successfully", Toast.LENGTH_SHORT).show();
+            if (ContextCompat.checkSelfPermission(MainActivity.this, Manifest.permission.ACCESS_FINE_LOCATION)
+                    != PackageManager.PERMISSION_GRANTED) {
+                //  permission check
+                ActivityCompat.requestPermissions(MainActivity.this, new String[]{Manifest.permission.ACCESS_COARSE_LOCATION}, LOCATION_CODE);
+                Toast.makeText(this, "No permission", Toast.LENGTH_SHORT).show();
+
+            } else {
+
+                // user allow permission
+            }
+        } else {
+
+            // GPS not open
+            Toast.makeText(MainActivity.this, "GPS hasn't turn on", Toast.LENGTH_SHORT).show();
+            Intent intent = new Intent();
+            intent.setAction(Settings.ACTION_LOCATION_SOURCE_SETTINGS);
+            startActivityForResult(intent, 1315);
+        }
+    }
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        switch (requestCode) {
+            case LOCATION_CODE: {
+                if (grantResults.length > 0
+                        && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    // accept permission
+
                 } else {
-                    Toast.makeText(this, "" + "permission" + permissions[i] + "apply failed", Toast.LENGTH_SHORT).show();
+                    // deny permission
+                    Toast.makeText(MainActivity.this, "Location permissions are disabled, some functions may unavailable!", Toast.LENGTH_LONG).show();
                 }
+
+            }
+            case 2: {
+                super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+
+                if (requestCode == 1) {
+                    for (int i = 0; i < permissions.length; i++) {
+                        if (grantResults[i] == PERMISSION_GRANTED) {
+
+                        } else {
+                            Toast.makeText(this, "" + "permission" + permissions[i] + "apply failed", Toast.LENGTH_SHORT).show();
+                        }
+                    }
+                }
+
             }
         }
     }
