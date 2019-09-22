@@ -6,14 +6,16 @@ public class UserEvents {
 
     private String ID;
     private String title;
-    private Date stime;
+    private Date sTime;
+    private Date eTime;
     private String location;
 
-    public UserEvents(String ID, String title, Date stime, String location) {
+    public UserEvents(String ID, String title, Date stime,Date eTime, String location) {
         this.ID = ID;
         this.title = title;
-        this.stime = stime;
+        this.sTime = stime;
         this.location = location;
+        this.eTime=eTime;
     }
 
     public String getID() {
@@ -24,11 +26,15 @@ public class UserEvents {
         return title;
     }
 
-    public Date getStime() {
-        return stime;
+    public Date getsTime() {
+        return sTime;
     }
 
     public String getLocation() {
         return location;
+    }
+
+    public Date geteTime() {
+        return eTime;
     }
 }

@@ -1,42 +1,40 @@
 package com.cloud.eventnotification.View;
 
-import android.app.AlertDialog;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.pm.PackageInfo;
+import android.content.pm.PackageManager;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.widget.EditText;
-import android.widget.ListView;
+import android.view.View;
+import android.widget.Button;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.cloud.eventnotification.Model.UserEvents;
 import com.cloud.eventnotification.R;
 import com.cloud.eventnotification.localDB.DBHelper;
 
-
-import java.lang.reflect.Field;
-import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Date;
-import java.util.Locale;
-import java.util.concurrent.ExecutionException;
+import java.util.List;
 
 public class EventDetail extends AppCompatActivity {
     private ArrayList<UserEvents> eventList = new ArrayList<>();
 
 
     private UserEvents thisEvent;
-    private EditText title;
-    private EditText sDate;
-    private EditText Location;
-    private MenuItem save;
-    private boolean isDelete=false;
-    private boolean isUpdate=false;
+    private TextView title;
+    private TextView sDate;
+    private TextView eDate;
+    private TextView Location;
+    private Button map;
+    private Context context=this;
+
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -50,16 +48,28 @@ public class EventDetail extends AppCompatActivity {
 
         //match widget
         this.title = findViewById(R.id.eTitle);
-        title.setEnabled(false);
         this.sDate = findViewById(R.id.eSdate);
-        sDate.setEnabled(false);
         this.Location = findViewById(R.id.eLocation);
-        Location.setEnabled(false);
+        this.map=findViewById(R.id.btnShow);
+        this.eDate=findViewById(R.id.tEdate);
 
         //display  event detail
         this.title.setText(thisEvent.getTitle());
-        this.sDate.setText(sdf.format(thisEvent.getStime()));
+        this.sDate.setText(sdf.format(thisEvent.getsTime()));
         this.Location.setText(thisEvent.getLocation());
+        this.eDate.setText(sdf.format(thisEvent.geteTime()));
+
+
+        this.map.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+                callMap();
+
+            }
+        });
+
+
 
     }
 
@@ -92,19 +102,7 @@ public class EventDetail extends AppCompatActivity {
                 this.startActivity(cal);
 
                 break;
-            //update event
-            case 19:
 
-
-                this.isUpdate=true;
-                Intent i = new Intent();
-                i.setClass(this, EventDetail.class);
-                i.putExtra("eventName",getIntent().getStringExtra("eventName"));
-                this.startActivity(i);
-                this.finish();
-
-
-                break;
         }
         return true;
     }
@@ -125,6 +123,37 @@ public class EventDetail extends AppCompatActivity {
                 event = eventList.get(i);
         }
         return event;
+    }
+    private void callMap(){
+
+        if (isAvilible(context, "com.google.android.apps.maps")) {
+            Uri gmmIntentUri = Uri.parse("https://www.google.com/maps/search/?api=1&query="+ thisEvent.getLocation()+"");
+            Intent mapIntent = new Intent(Intent.ACTION_VIEW,gmmIntentUri);
+            mapIntent.setPackage("com.google.android.apps.maps");
+            context.startActivity(mapIntent);
+        } else {
+            Toast.makeText(context, "you haven't install google map", Toast.LENGTH_LONG)
+                    .show();
+            Uri uri = Uri
+                    .parse("market://details?id=com.google.android.apps.maps");
+            Intent intent = new Intent(Intent.ACTION_VIEW, uri);
+            context.startActivity(intent);
+        }
+
+    }
+
+    public static boolean isAvilible(Context context, String packageName) {
+        final PackageManager packageManager = context.getPackageManager();
+        List<PackageInfo> packageInfos = packageManager.getInstalledPackages(0);
+        List<String> packageNames = new ArrayList<String>();
+        if (packageInfos != null) {
+            for (int i = 0; i < packageInfos.size(); i++) {
+                String packName = packageInfos.get(i).packageName;
+                packageNames.add(packName);
+            }
+        }
+        return packageNames.contains(packageName);
+
     }
 
 

@@ -12,6 +12,7 @@ public class Utility {
 
     public static ArrayList<String> nameOfEvent = new ArrayList<String>();
     public static ArrayList<String> startDates = new ArrayList<String>();
+    public static ArrayList<String> endDates = new ArrayList<String>();
     public static ArrayList<String> locations = new ArrayList<String>();
 
     public static void readCalendarEvent(Context context) {
@@ -29,6 +30,7 @@ public class Utility {
         nameOfEvent.clear();
         startDates.clear();
         locations.clear();
+        endDates.clear();
         for (int i = 0; i < CNames.length; i++) {
 
             if ("".equals(cursor.getString(5))||"".equals(getDate(Long.parseLong(cursor.getString(3)))))
@@ -40,6 +42,7 @@ public class Utility {
             nameOfEvent.add(cursor.getString(1));
             startDates.add(getDate(Long.parseLong(cursor.getString(3))));
             locations.add(cursor.getString(5));
+            endDates.add(getDate(Long.parseLong(cursor.getString(4))));
             CNames[i] = cursor.getString(1);
             cursor.moveToNext();
 

@@ -5,7 +5,6 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
-import android.widget.Toast;
 
 import com.cloud.eventnotification.Model.UserEvents;
 
@@ -26,7 +25,7 @@ public class DBHelper extends SQLiteOpenHelper {
     @Override
     public void onCreate(SQLiteDatabase db) {
         // create all tables
-        String CREATE_TABLE_Event = "CREATE TABLE Event( ID varchar(100) PRIMARY KEY, title varchar(20),stime varchar(50),Location varchar(100))";
+        String CREATE_TABLE_Event = "CREATE TABLE Event( ID varchar(100) PRIMARY KEY, title varchar(20),stime varchar(50),etime varchar(50),Location varchar(100))";
         db.execSQL(CREATE_TABLE_Event);
         String CREATE_TABLE_UserSetting = "CREATE TABLE UserSetting( name varchar(20) PRIMARY KEY,Period int,Threshold int,Remind int, mode varchar(20))";
         db.execSQL(CREATE_TABLE_UserSetting);
@@ -53,10 +52,12 @@ public class DBHelper extends SQLiteOpenHelper {
                 String id = cursor.getString(0);
                 String Title = cursor.getString(1);
                 String stime = cursor.getString(2);
-                String location = cursor.getString(3);
+                String etime = cursor.getString(3);
+                String location = cursor.getString(4);
                 try {
                     Date sTime = sdf.parse(stime);
-                    UserEvents newEvent = new UserEvents(id, Title, sTime, location);
+                    Date eTime = sdf.parse(etime);
+                    UserEvents newEvent = new UserEvents(id, Title, sTime,eTime,location);
                     events.add(newEvent);
                 } catch (ParseException e) {
                     e.printStackTrace();
@@ -82,7 +83,8 @@ public class DBHelper extends SQLiteOpenHelper {
         ContentValues values = new ContentValues();
         values.put("ID", tempEvent.getID());
         values.put("title", tempEvent.getTitle());
-        values.put("stime", sdf.format(tempEvent.getStime()));
+        values.put("stime", sdf.format(tempEvent.getsTime()));
+        values.put("etime", sdf.format(tempEvent.geteTime()));
          values.put("Location", tempEvent.getLocation());
         db.insert("Event", null, values);
 

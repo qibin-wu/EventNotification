@@ -29,7 +29,7 @@
             android:textColor="@color/colorBlack"
             android:textSize="18sp" />
 
-        <EditText
+        <TextView
             android:id="@+id/eTitle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -53,8 +53,31 @@
             android:textColor="@color/colorBlack"
             android:textSize="18sp" />
 
-        <EditText
+        <TextView
             android:id="@+id/eSdate"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+
+            />
+
+    </LinearLayout>
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_marginTop="30dp">
+
+        <TextView
+            android:id="@+id/txtEdate"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="End Time:"
+            android:textColor="@color/colorBlack"
+            android:textSize="18sp" />
+
+        <TextView
+            android:id="@+id/tEdate"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
 
@@ -77,28 +100,39 @@
             android:textColor="@color/colorBlack"
             android:textSize="18sp" />
 
-        <EditText
-            android:id="@+id/eLocation"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            />
+
 
     </LinearLayout>
 
-    <Button
-        android:id="@+id/btnShow"
+    <TextView
+        android:id="@+id/eLocation"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="5dp"
+        />
+
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Show on map"
-        android:layout_marginTop="300dp"/>
+        android:orientation="vertical"
+        android:layout_marginTop="30dp">
+
+        <Button
+            android:id="@+id/btnShow"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:text="Show on map"
+            android:background="@drawable/button"/>
 
     <Button
         android:id="@+id/btnDelete"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Cancel"
-        android:layout_marginTop="30dp"/>
+        android:text="Cancel Reminder"
+        android:layout_marginTop="30dp"
+        android:background="@drawable/button2"/>
 
-
+    </LinearLayout>
 
 </LinearLayout>

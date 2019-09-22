@@ -56,7 +56,7 @@ public class MainActivity extends AppCompatActivity {
         SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy h:mm:ss aa");
         eventItem[] items = new  eventItem[events.size()];
         for (int i = 0; i < items.length; i++) {
-            items[i] = new eventItem(events.get(i).getTitle(), sdf.format(events.get(i).getStime()));
+            items[i] = new eventItem(events.get(i).getTitle(), sdf.format(events.get(i).getsTime()));
         }
         eventItemAdapter myAdapter = new eventItemAdapter(this, items);
         ListView eventListView = findViewById(R.id.eventListView);
@@ -137,7 +137,7 @@ public class MainActivity extends AppCompatActivity {
 
         for(int i=0;i<Utility.locations.size();i++)
         {    UUID uuid = UUID.randomUUID();
-            UserEvents tempEvent= new UserEvents(Utility.nameOfEvent.get(i)+sdf.parse(Utility.startDates.get(i))+Utility.locations.get(i),Utility.nameOfEvent.get(i),sdf.parse(Utility.startDates.get(i)),Utility.locations.get(i));
+            UserEvents tempEvent= new UserEvents(Utility.nameOfEvent.get(i)+sdf.parse(Utility.startDates.get(i))+Utility.locations.get(i),Utility.nameOfEvent.get(i),sdf.parse(Utility.startDates.get(i)),sdf.parse(Utility.endDates.get(i)),Utility.locations.get(i));
             dbHelper.addEvent(tempEvent);
         }
 
