@@ -90,6 +90,13 @@ public class DBHelper extends SQLiteOpenHelper {
 
 
     }
+    public void deleteEvent(UserEvents tempEvent) {
+
+        SQLiteDatabase db = this.getWritableDatabase();
+        db.delete("Event", "ID=?", new String[]{tempEvent.getID()});
+
+
+    }
 
     private boolean checkEventExist(UserEvents tempEvent) {
         boolean check =false;
@@ -112,4 +119,5 @@ public class DBHelper extends SQLiteOpenHelper {
 
         return check;
     }
+
 }

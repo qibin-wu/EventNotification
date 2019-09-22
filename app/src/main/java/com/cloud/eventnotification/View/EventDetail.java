@@ -32,6 +32,7 @@ public class EventDetail extends AppCompatActivity {
     private TextView eDate;
     private TextView Location;
     private Button map;
+    private Button cancel;
     private Context context=this;
 
 
@@ -52,14 +53,13 @@ public class EventDetail extends AppCompatActivity {
         this.Location = findViewById(R.id.eLocation);
         this.map=findViewById(R.id.btnShow);
         this.eDate=findViewById(R.id.tEdate);
+        this.cancel=findViewById(R.id.btnDelete);
 
         //display  event detail
         this.title.setText(thisEvent.getTitle());
         this.sDate.setText(sdf.format(thisEvent.getsTime()));
         this.Location.setText(thisEvent.getLocation());
         this.eDate.setText(sdf.format(thisEvent.geteTime()));
-
-
         this.map.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -68,8 +68,24 @@ public class EventDetail extends AppCompatActivity {
 
             }
         });
+        this.cancel.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                cancelRemind();
+            }
+        });
 
 
+
+    }
+
+    private void cancelRemind() {
+        DBHelper dbHelper = new DBHelper(this, "eventn.db", null, 1);
+        dbHelper.getWritableDatabase();
+        dbHelper.deleteEvent(thisEvent);
+        Intent back = new Intent();
+        back.setClass(this, MainActivity.class);
+        this.startActivity(back);
 
     }
 
