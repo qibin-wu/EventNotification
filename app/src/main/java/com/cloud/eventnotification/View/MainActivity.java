@@ -19,37 +19,34 @@ import android.widget.ListView;
 import android.widget.Toast;
 
 import com.cloud.eventnotification.Adapter.eventItemAdapter;
+import com.cloud.eventnotification.CloudDB.AddEventTask;
+import com.cloud.eventnotification.CloudDB.RDS;
 import com.cloud.eventnotification.Model.UserEvents;
 import com.cloud.eventnotification.Model.Utility;
 import com.cloud.eventnotification.Model.eventItem;
 import com.cloud.eventnotification.R;
 import com.cloud.eventnotification.controller.ItemClickListener;
-import com.cloud.eventnotification.localDB.DBHelper;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.UUID;
 
 import static android.content.pm.PackageManager.PERMISSION_GRANTED;
 
 public class MainActivity extends AppCompatActivity {
 
-    private ArrayList<UserEvents> events= new ArrayList<>();
+    private static   ArrayList<UserEvents> events= new ArrayList<>();
     private static final int LOCATION_CODE = 1;
     private LocationManager lm;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
         requestCalendar();
         getPermission();
 
-        try {
-            UpdateEvent();
-        } catch (ParseException e) {
-            e.printStackTrace();
-        }
+
 
         getEventFromDB();
 
@@ -67,11 +64,20 @@ public class MainActivity extends AppCompatActivity {
         btnRef.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+
+                try {
+                    UpdateEvent();
+                } catch (ParseException e) {
+                    e.printStackTrace();
+                }
+
                 Intent back = new Intent();
                 back.setClass(MainActivity.this, MainActivity.class);
                 MainActivity.this.startActivity(back);
             }
         });
+
+
 
     }
 
@@ -132,13 +138,12 @@ public class MainActivity extends AppCompatActivity {
     private void UpdateEvent() throws ParseException {
         Utility.readCalendarEvent(this);
         SimpleDateFormat sdf = new SimpleDateFormat("d/MM/yyyy h:mm:ss aa");
-        DBHelper dbHelper = new DBHelper(this, "eventn.db", null, 1);
-        dbHelper.getWritableDatabase();
 
         for(int i=0;i<Utility.locations.size();i++)
-        {    UUID uuid = UUID.randomUUID();
-            UserEvents tempEvent= new UserEvents(Utility.nameOfEvent.get(i)+sdf.parse(Utility.startDates.get(i))+Utility.locations.get(i),Utility.nameOfEvent.get(i),sdf.parse(Utility.startDates.get(i)),sdf.parse(Utility.endDates.get(i)),Utility.locations.get(i));
-            dbHelper.addEvent(tempEvent);
+        {
+            UserEvents tempEvent= new UserEvents(Utility.nameOfEvent.get(i)+sdf.format(sdf.parse(Utility.startDates.get(i)))+Utility.locations.get(i),Utility.nameOfEvent.get(i),sdf.parse(Utility.startDates.get(i)),sdf.parse(Utility.endDates.get(i)),Utility.locations.get(i),Settings.System.getString(getContentResolver(), Settings.System.ANDROID_ID));
+             new AddEventTask(tempEvent).execute();
+
         }
 
 
@@ -146,10 +151,20 @@ public class MainActivity extends AppCompatActivity {
 
     private void getEventFromDB() {
 
-        DBHelper dbHelper = new DBHelper(this, "eventn.db", null, 1);
-        dbHelper.getWritableDatabase();
-        this.events = dbHelper.selectEvent();
+        new Thread(new Runnable(){
+            public void run(){
+
+               events =RDS.selectEvents(Settings.System.getString(getContentResolver(), Settings.System.ANDROID_ID));
+
+            }
+        }).start();
+
+
+
     }
+
+
+
 
     //ask CALENDAR PERMISSION
     public void requestCalendar() {

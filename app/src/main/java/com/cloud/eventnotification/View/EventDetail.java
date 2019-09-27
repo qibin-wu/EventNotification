@@ -6,6 +6,7 @@ import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.Bundle;
+import android.provider.Settings;
 import android.support.v7.app.AppCompatActivity;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -14,13 +15,15 @@ import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.cloud.eventnotification.CloudDB.DeleteEventTask;
+import com.cloud.eventnotification.CloudDB.ReadEventsTask;
 import com.cloud.eventnotification.Model.UserEvents;
 import com.cloud.eventnotification.R;
-import com.cloud.eventnotification.localDB.DBHelper;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.ExecutionException;
 
 public class EventDetail extends AppCompatActivity {
     private ArrayList<UserEvents> eventList = new ArrayList<>();
@@ -77,12 +80,12 @@ public class EventDetail extends AppCompatActivity {
 
 
 
+
     }
 
     private void cancelRemind() {
-        DBHelper dbHelper = new DBHelper(this, "eventn.db", null, 1);
-        dbHelper.getWritableDatabase();
-        dbHelper.deleteEvent(thisEvent);
+
+        new DeleteEventTask(thisEvent).execute();
         Intent back = new Intent();
         back.setClass(this, MainActivity.class);
         this.startActivity(back);
@@ -129,9 +132,14 @@ public class EventDetail extends AppCompatActivity {
         Intent intent = getIntent();
 
 
-        DBHelper dbHelper = new DBHelper(this, "eventn.db", null, 1);
-        dbHelper.getWritableDatabase();
-        this.eventList = dbHelper.selectEvent();
+        try {
+            this.eventList= new ReadEventsTask(Settings.System.getString(getContentResolver(), Settings.System.ANDROID_ID)).execute().get();
+
+        } catch (ExecutionException e) {
+            e.printStackTrace();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
 
         for (int i = 0; i < eventList.size(); i++) {
             //find the event in event list

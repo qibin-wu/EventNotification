@@ -33,7 +33,27 @@ public class eventItemAdapter extends ArrayAdapter< eventItem> {
         TextView eventTxt = convertView.findViewById(R.id.textEvent);
         TextView SdateTxt = convertView.findViewById(R.id.textSdate);
 
-        eventTxt.setText(item.getTitle());
+        String title="";
+        if(item.getTitle().contains(" "))
+        {
+            String substring[] = item.getTitle().split(" ");
+
+            for(int i=0;i<substring.length;i++){
+             title=title+substring[i]+" ";
+                if(i==2)
+                {
+                    title=title+".....";
+                    break;
+                }
+            }
+        }
+        else
+        {
+            title=item.getTitle();
+        }
+
+
+        eventTxt.setText(title);
 
         SdateTxt.setText(item.getsTime());
 
