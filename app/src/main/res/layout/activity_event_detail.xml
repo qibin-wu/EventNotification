@@ -118,12 +118,20 @@
         android:layout_marginTop="30dp">
 
         <Button
-            android:id="@+id/btnShow"
+            android:id="@+id/btnReff"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="10dp"
+            android:text="Reload"
+            android:background="@drawable/button3"/>
+        <Button
+            android:id="@+id/btnShow"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="30dp"
             android:text="Show on map"
             android:background="@drawable/button"/>
+
 
     <Button
         android:id="@+id/btnDelete"

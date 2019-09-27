@@ -16,6 +16,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.cloud.eventnotification.CloudDB.DeleteEventTask;
+import com.cloud.eventnotification.CloudDB.RDS;
 import com.cloud.eventnotification.CloudDB.ReadEventsTask;
 import com.cloud.eventnotification.Model.UserEvents;
 import com.cloud.eventnotification.R;
@@ -26,16 +27,17 @@ import java.util.List;
 import java.util.concurrent.ExecutionException;
 
 public class EventDetail extends AppCompatActivity {
-    private ArrayList<UserEvents> eventList = new ArrayList<>();
+    private static ArrayList<UserEvents> eventList = new ArrayList<>();
 
 
-    private UserEvents thisEvent;
+    private static UserEvents thisEvent=null;
     private TextView title;
     private TextView sDate;
     private TextView eDate;
     private TextView Location;
     private Button map;
     private Button cancel;
+    private Button reff;
     private Context context=this;
 
 
@@ -58,28 +60,47 @@ public class EventDetail extends AppCompatActivity {
         this.eDate=findViewById(R.id.tEdate);
         this.cancel=findViewById(R.id.btnDelete);
 
-        //display  event detail
-        this.title.setText(thisEvent.getTitle());
-        this.sDate.setText(sdf.format(thisEvent.getsTime()));
-        this.Location.setText(thisEvent.getLocation());
-        this.eDate.setText(sdf.format(thisEvent.geteTime()));
-        this.map.setOnClickListener(new View.OnClickListener() {
+
+        if(thisEvent!=null) {
+            //display  event detail
+            this.title.setText(thisEvent.getTitle());
+            this.sDate.setText(sdf.format(thisEvent.getsTime()));
+            this.Location.setText(thisEvent.getLocation());
+            this.eDate.setText(sdf.format(thisEvent.geteTime()));
+            this.map.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+
+                    callMap();
+
+                }
+            });
+            this.cancel.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    cancelRemind();
+                }
+            });
+
+        }
+        else {
+            this.title.setText("Waiting for Database");
+            this.sDate.setText("Waiting for Database");
+            this.Location.setText("Waiting for Database");
+            this.eDate.setText("Waiting for Database");
+        }
+
+        reff=findViewById(R.id.btnReff);
+        reff.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(View view) {
-
-                callMap();
-
+            public void onClick(View v) {
+                Intent intent = getIntent();
+                Intent ref = new Intent();
+                ref.setClass(EventDetail.this, EventDetail.class);
+                ref.putExtra("eventName", intent.getStringExtra("eventName"));
+                EventDetail.this.startActivity(ref);
             }
         });
-        this.cancel.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                cancelRemind();
-            }
-        });
-
-
-
 
     }
 
@@ -97,9 +118,6 @@ public class EventDetail extends AppCompatActivity {
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.event_menu, menu);
         MenuItem home = menu.add(0, 17, 0, "");
-        MenuItem cal = menu.add(0, 18, 0, "");
-        cal.setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS);
-        cal.setIcon(R.drawable.calendar);
         home.setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS);
         home.setIcon(R.drawable.home);
         return super.onCreateOptionsMenu(menu);
@@ -115,12 +133,7 @@ public class EventDetail extends AppCompatActivity {
                 back.setClass(this, MainActivity.class);
                 this.startActivity(back);
                 break;
-            case 18:
-                Intent cal = new Intent();
-                cal.setClass(this, EventCalendar.class);
-                this.startActivity(cal);
 
-                break;
 
         }
         return true;
@@ -131,15 +144,13 @@ public class EventDetail extends AppCompatActivity {
         UserEvents event = null;
         Intent intent = getIntent();
 
+        new Thread(new Runnable(){
+            public void run(){
 
-        try {
-            this.eventList= new ReadEventsTask(Settings.System.getString(getContentResolver(), Settings.System.ANDROID_ID)).execute().get();
+                eventList = RDS.selectEvents(Settings.System.getString(getContentResolver(), Settings.System.ANDROID_ID));
 
-        } catch (ExecutionException e) {
-            e.printStackTrace();
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
+            }
+        }).start();
 
         for (int i = 0; i < eventList.size(); i++) {
             //find the event in event list

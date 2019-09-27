@@ -5,17 +5,19 @@ import android.os.AsyncTask;
 
 import com.cloud.eventnotification.Model.UserEvents;
 
-public class AddEventTask extends AsyncTask<Void, Void, Void> {
-    private UserEvents UserEvents;
+import java.util.ArrayList;
 
-    public AddEventTask(UserEvents UserEvents)
+public class AddEventTask extends AsyncTask<Void, Void, Void> {
+    private ArrayList<UserEvents> userEvents;
+
+    public AddEventTask( ArrayList<UserEvents> userEvents)
     {
-        this.UserEvents=UserEvents;
+        this.userEvents=userEvents;
     }
 
     @Override
     protected Void doInBackground(Void... users) {
-        RDS.addEvent(UserEvents);
+        RDS.addEvents(userEvents);
         return null;
     }
 

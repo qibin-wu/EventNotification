@@ -30,6 +30,7 @@ import com.cloud.eventnotification.controller.ItemClickListener;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.concurrent.ExecutionException;
 
 import static android.content.pm.PackageManager.PERMISSION_GRANTED;
 
@@ -45,9 +46,6 @@ public class MainActivity extends AppCompatActivity {
 
         requestCalendar();
         getPermission();
-
-
-
         getEventFromDB();
 
         SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy h:mm:ss aa");
@@ -85,13 +83,8 @@ public class MainActivity extends AppCompatActivity {
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.event_menu, menu);
-        menu.add(0, 1, 0, "Add Event");
-        menu.add(0, 2, 0, "Setting");
-        menu.add(0, 3, 0, "Soonest events");
+        menu.add(0, 1, 0, "Setting");
         MenuItem home = menu.add(0, 17, 0, "");
-        MenuItem cal = menu.add(0, 18, 0, "");
-        cal.setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS);
-        cal.setIcon(R.drawable.calendar);
         home.setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS);
         home.setIcon(R.drawable.home);
         return super.onCreateOptionsMenu(menu);
@@ -125,27 +118,21 @@ public class MainActivity extends AppCompatActivity {
                 back.setClass(this, MainActivity.class);
                 this.startActivity(back);
                 break;
-            case 18:
-                Intent cal = new Intent();
-                cal.setClass(this, EventCalendar.class);
-                this.startActivity(cal);
-                break;
-
         }
         return true;
     }
 
     private void UpdateEvent() throws ParseException {
         Utility.readCalendarEvent(this);
+        ArrayList<UserEvents> userEvents=new ArrayList<>();
         SimpleDateFormat sdf = new SimpleDateFormat("d/MM/yyyy h:mm:ss aa");
 
         for(int i=0;i<Utility.locations.size();i++)
         {
             UserEvents tempEvent= new UserEvents(Utility.nameOfEvent.get(i)+sdf.format(sdf.parse(Utility.startDates.get(i)))+Utility.locations.get(i),Utility.nameOfEvent.get(i),sdf.parse(Utility.startDates.get(i)),sdf.parse(Utility.endDates.get(i)),Utility.locations.get(i),Settings.System.getString(getContentResolver(), Settings.System.ANDROID_ID));
-             new AddEventTask(tempEvent).execute();
-
+            userEvents.add(tempEvent);
         }
-
+            new AddEventTask(userEvents).execute();
 
     }
 

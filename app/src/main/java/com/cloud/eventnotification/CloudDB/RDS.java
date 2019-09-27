@@ -16,7 +16,10 @@ public class RDS {
 
     public static void addEvent(UserEvents tempEvent)
     {
-       checkEventExist(tempEvent);
+        if(checkEventExist(tempEvent))
+        {
+            return;
+        }
         Connection conn = null;
         Statement stmt = null;
         try{
@@ -214,5 +217,13 @@ public class RDS {
             }
         }
 
+    }
+
+    public static void addEvents(ArrayList<UserEvents> userEvents) {
+
+        for(int i=0;i<userEvents.size();i++)
+        {
+            RDS.addEvent(userEvents.get(i));
+        }
     }
 }
