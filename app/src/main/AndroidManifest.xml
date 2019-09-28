@@ -21,8 +21,9 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".View.EventDetail"></activity>
-        <activity android:name=".View.Setting"></activity>
+        <activity android:name=".View.Direction"></activity>
+        <activity android:name=".View.EventDetail" />
+        <activity android:name=".View.Setting" />
         <activity android:name=".View.MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -30,6 +31,12 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
+        <receiver android:name=".Model.NotificationBroadcastReceiver" />
+
+        <service
+            android:name=".Model.RemindIntentService"
+            android:permission="android.permission.BIND_JOB_SERVICE" />
     </application>
 
 </manifest>

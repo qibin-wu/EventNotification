@@ -8,6 +8,7 @@ import com.cloud.eventnotification.Model.UserEvents;
 import java.sql.*;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 
 public class RDS {
     static final String JDBC_DRIVER = "com.mysql.jdbc.Driver";
@@ -226,6 +227,47 @@ public class RDS {
 
     }
 
+    public static UserEvents  getEventBytitle(String title,String AID)
+    {
+        SimpleDateFormat sdf = new SimpleDateFormat("d/MM/yyyy h:mm:ss aa");
+        UserEvents userEvents=new UserEvents("unknow",title,new Date(System.currentTimeMillis()),new Date(System.currentTimeMillis()),"unknow",AID);
+        Connection conn = null;
+        Statement stmt = null;
+        try{
+
+            Class.forName(JDBC_DRIVER);
+            conn = DriverManager.getConnection(DB_URL,USER,PASS);
+            stmt = conn.createStatement();
+            String sql;
+            sql = "SELECT * FROM eventn.Event where Android_ID='"+ AID+"' and title='"+title+"'";
+            ResultSet rs = stmt.executeQuery(sql);
+            while(rs.next()){
+              userEvents=new UserEvents(rs.getString("ID"),rs.getString("title"),sdf.parse(rs.getString("stime")),sdf.parse(rs.getString("etime")),rs.getString("location"),rs.getString("Android_ID"));
+            }
+            rs.close();
+            stmt.close();
+            conn.close();
+        }catch(SQLException se){
+
+            se.printStackTrace();
+        }catch(Exception e){
+            e.printStackTrace();
+        }finally{
+
+            try{
+                if(stmt!=null) stmt.close();
+            }catch(SQLException se2){
+            }
+            try{
+                if(conn!=null) conn.close();
+            }catch(SQLException se){
+                se.printStackTrace();
+            }
+        }
+
+        return userEvents;
+    }
+
     public static void deleteEvent(UserEvents userEvents) {
         Connection conn = null;
         Statement stmt = null;
@@ -301,6 +343,12 @@ public class RDS {
         }
 
 
+
+    }
+
+    public static void deleteEvent(String title, String aid) {
+
+        RDS.deleteEvent(getEventBytitle(title,aid));
 
     }
 }

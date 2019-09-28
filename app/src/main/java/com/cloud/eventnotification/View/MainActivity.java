@@ -2,6 +2,10 @@ package com.cloud.eventnotification.View;
 
 import android.Manifest;
 
+import android.app.Activity;
+import android.app.AlarmManager;
+import android.app.PendingIntent;
+import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.location.LocationManager;
@@ -11,6 +15,7 @@ import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.text.format.DateUtils;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -21,6 +26,7 @@ import android.widget.Toast;
 import com.cloud.eventnotification.Adapter.eventItemAdapter;
 import com.cloud.eventnotification.CloudDB.AddEventTask;
 import com.cloud.eventnotification.CloudDB.RDS;
+import com.cloud.eventnotification.Model.RemindIntentService;
 import com.cloud.eventnotification.Model.UserEvents;
 import com.cloud.eventnotification.Model.Utility;
 import com.cloud.eventnotification.Model.eventItem;
@@ -39,11 +45,16 @@ public class MainActivity extends AppCompatActivity {
     private static   ArrayList<UserEvents> events= new ArrayList<>();
     private static final int LOCATION_CODE = 1;
     private LocationManager lm;
+    private static PendingIntent pendingIntent=null;
+    private static AlarmManager am=null;
+    private Context context=this;
+    private static String Android_ID="";
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
+        Android_ID=Settings.System.getString(getContentResolver(), Settings.System.ANDROID_ID);
         requestCalendar();
         getPermission();
         getEventFromDB();
@@ -75,6 +86,20 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
+
+
+        new Thread(new Runnable(){
+            public void run(){
+
+                am = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
+                Intent intent = new Intent(context, RemindIntentService.class);
+                pendingIntent = PendingIntent.getService(context, 999, intent, 0);
+                long interval = DateUtils.MINUTE_IN_MILLIS * RDS.getRa(Android_ID);//  notification period
+                long firstWake = System.currentTimeMillis() + interval;
+                am.setRepeating(AlarmManager.RTC, firstWake, interval, pendingIntent);
+
+            }
+        }).start();
 
 
     }
