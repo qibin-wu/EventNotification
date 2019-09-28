@@ -33,7 +33,7 @@
     <string name="dismiss">Dismiss</string>
     <string name="cancel">Cancel</string>
     <string name="remind_later">Remind Later</string>
-    <string name="setting_the_remind_time">Setting the remind time</string>
+    <string name="setting_the_remind_time">User Setting</string>
     <string name="mins">Mins</string>
     <string name="title_activity_maps">Soonest events</string>
     <string name="notification_period">Notification Period:</string>

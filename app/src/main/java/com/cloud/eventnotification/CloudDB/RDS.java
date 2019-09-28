@@ -1,6 +1,7 @@
 package com.cloud.eventnotification.CloudDB;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.text.Editable;
 
 import com.cloud.eventnotification.Model.UserEvents;
 
@@ -101,48 +102,6 @@ public class RDS {
 
         return check;
     }
-    public static String test(){
-        Connection conn = null;
-        Statement stmt = null;
-        String test = "fail";
-        try{
-            // 注册 JDBC 驱动
-            Class.forName(JDBC_DRIVER);
-            conn = DriverManager.getConnection(DB_URL,USER,PASS);
-            stmt = conn.createStatement();
-            String sql;
-            sql = "SELECT * FROM Event";
-            ResultSet rs = stmt.executeQuery(sql);
-            while(rs.next()){
-
-                test = rs.getString("id");
-
-
-            }
-            // 完成后关闭
-            rs.close();
-            stmt.close();
-            conn.close();
-        }catch(SQLException se){
-
-            se.printStackTrace();
-        }catch(Exception e){
-            e.printStackTrace();
-        }finally{
-
-            try{
-                if(stmt!=null) stmt.close();
-            }catch(SQLException se2){
-            }
-            try{
-                if(conn!=null) conn.close();
-            }catch(SQLException se){
-                se.printStackTrace();
-            }
-        }
-
-    return test;
-    }
 
     public static ArrayList<UserEvents> selectEvents(String a_id) {
         ArrayList<UserEvents> userEvents= new ArrayList<>();
@@ -186,6 +145,87 @@ public class RDS {
 
     }
 
+    public static int getTh(String a_id) {
+        int Th=60;
+        Connection conn = null;
+        Statement stmt = null;
+        try{
+
+            Class.forName(JDBC_DRIVER);
+            conn = DriverManager.getConnection(DB_URL,USER,PASS);
+            stmt = conn.createStatement();
+            String sql;
+            sql = "SELECT Threshold FROM eventn.UserSetting where Android_ID='"+ a_id+"'";
+            ResultSet rs = stmt.executeQuery(sql);
+            while(rs.next()){
+               Th=rs.getInt("Threshold");
+            }
+            rs.close();
+            stmt.close();
+            conn.close();
+        }catch(SQLException se){
+
+            se.printStackTrace();
+        }catch(Exception e){
+            e.printStackTrace();
+        }finally{
+
+            try{
+                if(stmt!=null) stmt.close();
+            }catch(SQLException se2){
+            }
+            try{
+                if(conn!=null) conn.close();
+            }catch(SQLException se){
+                se.printStackTrace();
+            }
+        }
+
+
+        return Th;
+
+    }
+    public static int getRa(String a_id) {
+        int Ra=1;
+        Connection conn = null;
+        Statement stmt = null;
+        try{
+
+            Class.forName(JDBC_DRIVER);
+            conn = DriverManager.getConnection(DB_URL,USER,PASS);
+            stmt = conn.createStatement();
+            String sql;
+            sql = "SELECT Remind FROM eventn.UserSetting where Android_ID='"+ a_id+"'";
+            ResultSet rs = stmt.executeQuery(sql);
+            while(rs.next()){
+                Ra=rs.getInt("Remind");
+            }
+            rs.close();
+            stmt.close();
+            conn.close();
+        }catch(SQLException se){
+
+            se.printStackTrace();
+        }catch(Exception e){
+            e.printStackTrace();
+        }finally{
+
+            try{
+                if(stmt!=null) stmt.close();
+            }catch(SQLException se2){
+            }
+            try{
+                if(conn!=null) conn.close();
+            }catch(SQLException se){
+                se.printStackTrace();
+            }
+        }
+
+
+        return Ra;
+
+    }
+
     public static void deleteEvent(UserEvents userEvents) {
         Connection conn = null;
         Statement stmt = null;
@@ -225,5 +265,42 @@ public class RDS {
         {
             RDS.addEvent(userEvents.get(i));
         }
+    }
+
+    public static void setTime(String AID, String TH, String RA) {
+
+        Connection conn = null;
+        Statement stmt = null;
+        try{
+
+            Class.forName(JDBC_DRIVER);
+            conn = DriverManager.getConnection(DB_URL,USER,PASS);
+            stmt = conn.createStatement();
+            String sql;
+            sql = "INSERT INTO eventn.UserSetting" +
+                    "(Android_ID, Threshold, Remind)" +
+                    "VALUES('"+AID+"', "+Integer.parseInt(TH)+", "+Integer.parseInt(RA)+");";
+            stmt.executeUpdate(sql);
+            stmt.close();
+            conn.close();
+        }catch(SQLException se){
+            se.printStackTrace();
+        }catch(Exception e){
+            e.printStackTrace();
+        }finally{
+
+            try{
+                if(stmt!=null) stmt.close();
+            }catch(SQLException se2){
+            }
+            try{
+                if(conn!=null) conn.close();
+            }catch(SQLException se){
+                se.printStackTrace();
+            }
+        }
+
+
+
     }
 }

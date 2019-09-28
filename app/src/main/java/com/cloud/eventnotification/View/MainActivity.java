@@ -96,22 +96,9 @@ public class MainActivity extends AppCompatActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case 1:
-                /*
                 Intent intent = new Intent();
-                intent.setClass(this, AddEvent.class);
-                intent.putExtra("eventNum", this.event.size() + "");
-                this.startActivity(intent);*/
-                break;
-            case 2:
-                /*
-                Intent intent2 = new Intent();
-                intent2.setClass(this, MovieList.class);
-                this.startActivity(intent2);*/
-                break;
-            case 3:/*
-                Intent intent3 = new Intent();
-                intent3.setClass(this, ConfigTime.class);
-                this.startActivity(intent3);*/
+                intent.setClass(this, Setting.class);
+                this.startActivity(intent);
                 break;
             case 17:
                 Intent back = new Intent();

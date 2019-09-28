@@ -128,6 +128,11 @@ public class EventDetail extends AppCompatActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
 
         switch (item.getItemId()) {
+            case 1:
+                Intent intent = new Intent();
+                intent.setClass(this, Setting.class);
+                this.startActivity(intent);
+                break;
             case 17:
                 Intent back = new Intent();
                 back.setClass(this, MainActivity.class);
