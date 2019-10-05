@@ -88,18 +88,16 @@ public class MainActivity extends AppCompatActivity {
 
 
 
-        new Thread(new Runnable(){
-            public void run(){
+
 
                 am = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
                 Intent intent = new Intent(context, RemindIntentService.class);
                 pendingIntent = PendingIntent.getService(context, 999, intent, 0);
-                long interval = DateUtils.MINUTE_IN_MILLIS * RDS.getRa(Android_ID);//  notification period
+                long interval = DateUtils.MINUTE_IN_MILLIS;//  notification period
                 long firstWake = System.currentTimeMillis() + interval;
                 am.setRepeating(AlarmManager.RTC, firstWake, interval, pendingIntent);
 
-            }
-        }).start();
+
 
 
     }

@@ -82,7 +82,7 @@ public class RemindIntentService extends IntentService {
                drivingNotifBldr = (NotificationCompat.Builder) new NotificationCompat.Builder(this)
                        .setSmallIcon(R.drawable.ic_launcher_foreground)
                        .setContentTitle(events.get(i).getTitle())
-                       .setContentText("Est drive time:"+driveTime)
+                       .setContentText("Start Time:"+events.get(i).getsTime())
 
                        .addAction(R.drawable.ic_launcher_foreground, "Direction", pIntentDismiss)
                        .addAction(R.drawable.ic_launcher_foreground, "Cancel", pIntentCancel)
