@@ -147,83 +147,15 @@ public class RDS {
     }
 
     public static int getTh(String a_id) {
-        int Th=60;
-        Connection conn = null;
-        Statement stmt = null;
-        try{
-
-            Class.forName(JDBC_DRIVER);
-            conn = DriverManager.getConnection(DB_URL,USER,PASS);
-            stmt = conn.createStatement();
-            String sql;
-            sql = "SELECT Threshold FROM eventn.UserSetting where Android_ID='"+ a_id+"'";
-            ResultSet rs = stmt.executeQuery(sql);
-            while(rs.next()){
-               Th=rs.getInt("Threshold");
-            }
-            rs.close();
-            stmt.close();
-            conn.close();
-        }catch(SQLException se){
-
-            se.printStackTrace();
-        }catch(Exception e){
-            e.printStackTrace();
-        }finally{
-
-            try{
-                if(stmt!=null) stmt.close();
-            }catch(SQLException se2){
-            }
-            try{
-                if(conn!=null) conn.close();
-            }catch(SQLException se){
-                se.printStackTrace();
-            }
-        }
 
 
-        return Th;
+        return EndPoint.getTh(a_id);
 
     }
     public static int getRa(String a_id) {
-        int Ra=1;
-        Connection conn = null;
-        Statement stmt = null;
-        try{
-
-            Class.forName(JDBC_DRIVER);
-            conn = DriverManager.getConnection(DB_URL,USER,PASS);
-            stmt = conn.createStatement();
-            String sql;
-            sql = "SELECT Remind FROM eventn.UserSetting where Android_ID='"+ a_id+"'";
-            ResultSet rs = stmt.executeQuery(sql);
-            while(rs.next()){
-                Ra=rs.getInt("Remind");
-            }
-            rs.close();
-            stmt.close();
-            conn.close();
-        }catch(SQLException se){
-
-            se.printStackTrace();
-        }catch(Exception e){
-            e.printStackTrace();
-        }finally{
-
-            try{
-                if(stmt!=null) stmt.close();
-            }catch(SQLException se2){
-            }
-            try{
-                if(conn!=null) conn.close();
-            }catch(SQLException se){
-                se.printStackTrace();
-            }
-        }
 
 
-        return Ra;
+        return EndPoint.getRa(a_id);
 
     }
 

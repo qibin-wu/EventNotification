@@ -45,8 +45,8 @@ public class MainActivity extends AppCompatActivity {
     private static   ArrayList<UserEvents> events= new ArrayList<>();
     private static final int LOCATION_CODE = 1;
     private LocationManager lm;
-    private static PendingIntent pendingIntent=null;
-    private static AlarmManager am=null;
+    private PendingIntent pendingIntent=null;
+    private  AlarmManager am=null;
     private Context context=this;
     private static String Android_ID="";
 
@@ -87,7 +87,7 @@ public class MainActivity extends AppCompatActivity {
         });
 
 
-
+/*
         new Thread(new Runnable(){
             public void run(){
 
@@ -100,6 +100,15 @@ public class MainActivity extends AppCompatActivity {
 
             }
         }).start();
+*/
+
+
+                am = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
+                Intent intent = new Intent(context, RemindIntentService.class);
+                pendingIntent = PendingIntent.getService(context, 999, intent, 0);
+                long interval = DateUtils.MINUTE_IN_MILLIS ;//  notification period
+                long firstWake = System.currentTimeMillis() + interval;
+                am.setRepeating(AlarmManager.RTC, firstWake, interval, pendingIntent);
 
 
     }
